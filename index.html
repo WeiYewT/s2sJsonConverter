@@ -26,10 +26,9 @@
 <body>
   <h1>JSON Converter</h1>
 
-  <!-- Input JSON (Format A) -->
   <div>
-    <label class="input-label" for="inputJSON">Paste Format A JSON:</label>
-    <textarea id="inputJSON" rows="10" placeholder="Paste your Format A JSON here"></textarea>
+    <label class="input-label" for="inputJSON">Paste JSON:</label>
+    <textarea id="inputJSON" rows="10" placeholder="Paste your JSON here"></textarea>
   </div>
 
   <!-- Target Element Selector -->
@@ -43,9 +42,8 @@
     <button onclick="letsGo()">Convert</button>
   </div>
 
-  <!-- Output JSON (Format B) -->
   <div>
-    <label class="input-label" for="outputJSON">Resulting Format B JSON:</label>
+    <label class="input-label" for="outputJSON">Resulting JSON:</label>
     <textarea id="outputJSON" rows="10" readonly></textarea>
   </div>
 
@@ -74,7 +72,6 @@
           });
         }
 
-        // 4. Create the skeleton for Format B.
         const outputObj = {
           "sessionId": "",
           "pageContext": {
