@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JSON Converter</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    textarea, input {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .input-label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>JSON Converter</h1>
+
+  <!-- Input JSON (Format A) -->
+  <div>
+    <label class="input-label" for="inputJSON">Paste Format A JSON:</label>
+    <textarea id="inputJSON" rows="10" placeholder="Paste your Format A JSON here"></textarea>
+  </div>
+
+  <!-- Target Element Selector -->
+  <div>
+    <label class="input-label" for="targetElementSelector">New targetElementSelector (optional):</label>
+    <input id="targetElementSelector" type="text" placeholder="#target_element" />
+  </div>
+
+  <!-- Buttons -->
+  <div>
+    <button onclick="letsGo()">Convert</button>
+  </div>
+
+  <!-- Output JSON (Format B) -->
+  <div>
+    <label class="input-label" for="outputJSON">Resulting Format B JSON:</label>
+    <textarea id="outputJSON" rows="10" readonly></textarea>
+  </div>
+
+  <script>
+    function letsGo() {
+      convertJSON();
+      copyOutput();
+    }
+
+    function convertJSON() {
+      try {
+        // 1. Get the text from the input area and parse it.
+        const inputStr = document.getElementById('inputJSON').value;
+        const inputObj = JSON.parse(inputStr);
+
+        // 2. Get the user-supplied targetElementSelector.
+        const targetElementSelectorInput = document.getElementById('targetElementSelector').value.trim();
+
+        // 3. If user typed something, replace the targetElementSelector in the input JSON.
+        //    (Assuming it's nested under each plugin's "plugin" object, if it exists.)
+        if (targetElementSelectorInput && Array.isArray(inputObj.plugins)) {
+          inputObj.plugins.forEach(pluginObj => {
+            if (pluginObj.plugin && pluginObj.plugin.targetElementSelector) {
+              pluginObj.plugin.targetElementSelector = targetElementSelectorInput;
+            }
+          });
+        }
+
+        // 4. Create the skeleton for Format B.
+        const outputObj = {
+          "sessionId": "",
+          "pageContext": {
+            "pageInstanceGuid": "",
+            "pageId": "",
+            "language": "en",
+            "isPageDetected": true,
+            "pageVariantName": "",
+            "token": ""
+          },
+          "plugins": [
+            {
+              "plugin": {}
+            }
+          ],
+          "options": {
+            "useDiagnosticEvents": false
+          },
+          "success": true
+        };
+
+        // 5. Copy over the "plugins" array from Format A to Format B.
+        if (Array.isArray(inputObj.plugins)) {
+          outputObj.plugins = inputObj.plugins;
+        }
+
+        // 6. Convert the resulting object back to JSON and display it.
+        document.getElementById('outputJSON').value = JSON.stringify(outputObj, null, 2);
+      } catch (err) {
+        alert('Invalid JSON! Please check your input.\n\nError: ' + err);
+      }
+    }
+
+    function copyOutput() {
+      // Get the text from the output textarea
+      const outputText = document.getElementById('outputJSON').value;
+
+      // Use the Clipboard API to copy
+      navigator.clipboard.writeText(outputText)
+        .then(() => {
+          alert("Output JSON copied to clipboard!");
+        })
+        .catch(err => {
+          alert("Failed to copy: " + err);
+        });
+    }
+  </script>
+</body>
+</html>
+
